@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Notification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #121212;
+    }
+    .notification-box {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transform: translateX(100%);
+      transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+      opacity: 0;
+    }
+    .show {
+      display: block;
+      transform: translateX(0);
+      opacity: 1;
+      animation: zoomIn 0.5s ease-in-out;
+    }
+    @keyframes zoomIn {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="popup" class="notification-box"></div>
+  <audio id="beep-sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+
+  <script>
+    function showNotification(title, message) {
+      const popup = document.getElementById('popup');
+      const beep = document.getElementById('beep-sound');
+      
+      // ✅ Corrected template literal
+      popup.innerHTML = `<strong>${title}</strong><br>${message}`;
+      popup.classList.add('show');
+      
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 5000);
+
+      // 🔊 Beep sound
+      beep.play();
+
+      // 📳 Vibration
+      if (navigator.vibrate) {
+        navigator.vibrate([300, 100, 300]);
+      }
+
+      // 🔔 Native push notification (if supported)
+      if (!('Notification' in window)) {
+        alert(`${title}: ${message}`);
+      } else if (Notification.permission === 'granted') {
+        new Notification(title, { body: message });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            new Notification(title, { body: message });
+          } else {
+            alert(`${title}: ${message}`);
+          }
+        });
+      } else {
+        alert(`${title}: ${message}`);
+      }
+    }
+
+    // 🚀 Trigger test notification
+    showNotification('Weather Alert', '28°C, Good Air Quality in Santhanuthalapadu');
+  </script>
+</body>
+</html>

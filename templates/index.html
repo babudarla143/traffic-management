@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Prediction & Weather Alerts</title>
+
+    <!-- Inject API keys using Flask -->
+    <script>
+        const GRAPH_HOPPER_API_KEY = "{{ graph_hopper_api_key }}";
+        const WEATHER_API_KEY = "{{ weather_api_key }}";
+        const GOOGLE_MAPS_API_KEY = "{{ google_maps_api_key }}";
+        const GOOGLE_MAPS_BACKEND_API_KEY = "{{ google_backend_api_key }}";
+        const TOMTOM_API = "{{ traffic_api_key }}";
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-messaging-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-database-compat.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="/static/firebaseConfig.js"></script>
+    <script src="/static/script.js" defer></script>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" type="image/png" href="static/logo.jpg">
+    <!--<script src="{{ url_for('static', filename='script.js') }}"></script>-->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap&libraries=places" async defer></script>
+    <!--<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap&libraries=places" async defer></script>-->
+
+</head>
+<body>
+    <div id="map-wrapper"
+        <h1>Traffic Prediction & Weather Alerts</h1>
+        <div id="info-panel">
+            <input type="text" id="source" placeholder="Enter source location">
+            <input type="text" id="destination" placeholder="Enter destination">
+
+            <div class="location-toggle">
+                <input type="checkbox" id="useCurrentLocation" />
+                <label for="useCurrentLocation">Use Current Location</label>
+            </div>      
+        </div>
+        <div class="map-buttons">
+            <button onclick="getRoute()">Get Route</button>
+            <button onclick="toggleLiveTracking()">Start Tracking</button>
+            <button onclick="stopLiveTracking()">Stop Tracking</button>
+            <button onclick="refreshWeather()">Refresh Weather</button>
+        </div>
+        <div id="tracking-status" style="margin-top: 10px; font-weight: bold; color: #007bff;"></div>
+        <div id="popup" class="notification-box"></div>
+        <audio id="beep-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
+        <div id="traffic-info">
+            <div id="weather-output"></div>
+            <div id="danger-zones"></div>
+            <div><p id="weather-alerts"></p></div>
+            <div><p id="route-summary"></p></div>
+            <div><p id="road-closure"></p></div>
+        </div>
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+    <script>
+        let timeout;
+        const showTime = 5000; // 5 seconds
+      
+        const showElements = () => {
+          document.body.classList.add('show-panel');
+          document.querySelectorAll('.map-buttons, #info-panel').forEach(el => {
+            el.classList.remove('hidden');
+          });
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            document.body.classList.remove('show-panel');
+            document.querySelectorAll('.map-buttons, #info-panel').forEach(el => {
+              el.classList.add('hidden');
+            });
+          }, showTime);
+        };
+      
+        // Attach listener for interaction
+        document.body.addEventListener('click', showElements);
+        document.body.addEventListener('touchstart', showElements);
+      
+        // Optional: Auto-show on page load
+        window.addEventListener('load', showElements);
+      </script>
+      
+    <footer>
+        <p>© 2025 MyMapApp | Powered by Google Maps, Firebase & APIs</p>
+    </footer>
+</body>
+</html>
